@@ -13,7 +13,7 @@ const Hero = () => {
 
     return (
         <section id='home' className='min-h-screen flex flex-col justify-end'>
-            <AnimatedHeaderSection subTitle={'Where Ideas Become Scalable Software'} title={"Abhishek Yadav"} text={Text} textColor={"text-black"}/>
+            <AnimatedHeaderSection subTitle={'Where Ideas Become Scalable Software'} title={"Abhishek Yadav"} text={Text} textColor={"text-black"} />
 
             <figure className='absolute inset-0 -z-50' style={{ width: "100vw", height: '100vh' }}>
 

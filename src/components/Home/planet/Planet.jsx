@@ -1,20 +1,25 @@
 import React, { useRef } from "react";
 import { useGLTF } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 import { useGSAP } from "@gsap/react";
+import * as THREE from "three";
 import gsap from "gsap";
 
 export function Planet(props) {
     const shapeContainer = useRef(null);
     const shperesContainer = useRef(null);
-    const ringContainer = useRef(null);
+    const ringTiltRef = useRef(null);
+    const ringMeshRef = useRef(null);
     const { nodes, materials } = useGLTF("/model/Planet.glb");
 
     useGSAP(() => {
+        if (!shapeContainer.current || !shperesContainer.current || !ringTiltRef.current) return;
+
         const tl = gsap.timeline();
         tl.from(shapeContainer.current.position, {
-            y: 5,
-            duration: 3,
-            ease: "circ.out",
+            y: 2,
+            duration: 2.5,
+            ease: "power2.out",
         });
         tl.from(
             shperesContainer.current.rotation,
@@ -22,23 +27,47 @@ export function Planet(props) {
                 x: 0,
                 y: Math.PI,
                 z: -Math.PI,
-                duration: 10,
+                duration: 6,
                 ease: "power1.inOut",
             },
-            "-=25%"
+            "-=50%"
         );
         tl.from(
-            ringContainer.current.rotation,
+            ringTiltRef.current.rotation,
             {
                 x: 0.8,
                 y: 0,
                 z: 0,
-                duration: 10,
+                duration: 6,
                 ease: "power1.inOut",
             },
             "<"
         );
     }, []);
+
+    useFrame((state, delta) => {
+        // Continuous smooth spin of the golden ring on its local plane axis
+        if (ringMeshRef.current) {
+            ringMeshRef.current.rotation.y += delta * 0.25;
+        }
+        // Continuous orbit of the golden moon around the planet
+        if (shperesContainer.current) {
+            shperesContainer.current.rotation.y += delta * 0.12;
+        }
+        // Subtle responsive mouse parallax tilt
+        if (shapeContainer.current) {
+            shapeContainer.current.rotation.y = THREE.MathUtils.lerp(
+                shapeContainer.current.rotation.y,
+                state.pointer.x * 0.35,
+                0.05
+            );
+            shapeContainer.current.rotation.x = THREE.MathUtils.lerp(
+                shapeContainer.current.rotation.x,
+                -state.pointer.y * 0.25,
+                0.05
+            );
+        }
+    });
 
     return (
         <group ref={shapeContainer} {...props} dispose={null}>
@@ -60,15 +89,16 @@ export function Planet(props) {
                     scale={0.223}
                 />
             </group>
-            <mesh
-                ref={ringContainer}
-                castShadow
-                receiveShadow
-                geometry={nodes.Ring.geometry}
-                material={materials["Material.001"]}
-                rotation={[-0.124, 0.123, -0.778]}
-                scale={2}
-            />
+            <group ref={ringTiltRef} rotation={[-0.124, 0.123, -0.778]}>
+                <mesh
+                    ref={ringMeshRef}
+                    castShadow
+                    receiveShadow
+                    geometry={nodes.Ring.geometry}
+                    material={materials["Material.001"]}
+                    scale={2}
+                />
+            </group>
         </group>
     );
 }

@@ -18,7 +18,7 @@ const App = () => {
       {
         showLoader && <Loader onFinish={() => setShowLoader(false)} />
       }
-        {!showLoader && (
+      {!showLoader && (
         <>
           <NavBar />
           <Home />

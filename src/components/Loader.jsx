@@ -78,7 +78,7 @@ const Loader = ({ onFinish }) => {
             </span>
           ))}
         </div>
-        
+
       </h1>
 
       <div className="follow-bar absolute top-1/2 left-0 h-0.5 bg-primary -translate-y-1/2 z-20" />
